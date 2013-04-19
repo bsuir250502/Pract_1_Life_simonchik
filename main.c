@@ -1,22 +1,22 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-int input_data(FILE * in_field)
+int input_data(FILE *in_file)
 {
     int number;
-    if (!(fscanf(in_field, "%d", &number))) {
+    if (!(fscanf(in_file, "%d", &number))) {
         puts("ERROR");
         exit(0);
     }
     return number;
 }
 
-void input_field(FILE * in_field, int **initial_field, int width,int height)
+void input_field(FILE *in_file, int **initial_field, int height,int width)
 {
     int i, j;
-    for (i = 0; i < width; i++) {
-        for (j = 0; j < height; j++) {
-            if (!(fscanf(in_field, "%d", &initial_field[i][j]))) {
+    for (i = 0; i < height; i++) {
+        for (j = 0; j <width ; j++) {
+            if (!(fscanf(in_file, "%d", &initial_field[i][j]))) {
                 puts("ERROR");
                 exit(0);
             }
@@ -24,12 +24,12 @@ void input_field(FILE * in_field, int **initial_field, int width,int height)
     }
 }
 
-void output_field(int **initial_field, int width, int height)
+void output_field(int **initial_field, int height, int width)
 {
     int i, j;
-    for (i = 0; i < width; i++) {
+    for (i = 0; i < height; i++) {
         printf("\n");
-        for (j = 0; j < height; j++) {
+        for (j = 0; j < width; j++) {
             if (initial_field[i][j])
                 printf("*");
             else
@@ -38,45 +38,45 @@ void output_field(int **initial_field, int width, int height)
     }
 }
 
-int num_of_neighbors(int **initial_field, int width, int height, int i,
-                     int j)
+int num_of_neighbors(int **initial_field, int height, int width, int i, int j)
 {
-    int up, down, right, left, num;
-    if (j == 0) {
+int up, down, right, left, num;
+    if(i==0){
         (up = height - 1);
-    } else {
-        (up = j - 1);
     }
-    if (i == 0) {
+    else{
+        (up = i - 1);
+    }
+    if(j==0){
         (left = width - 1);
-    } else {
-        (left = i - 1);
     }
-    if (j == height - 1) {
+    else{
+        (left = j - 1);
+    }
+    if(i == height - 1){
         (down = 0);
-    } else {
-        (down = j + 1);
     }
-    if (i == width - 1) {
+    else{
+        (down = i + 1);
+    }
+    if(j == width - 1){
         (right = 0);
-    } else {
-        (right = i + 1);
     }
-    return num =
-        initial_field[i][up] + initial_field[i][down] +
-        initial_field[left][j] + initial_field[right][j]
-        + initial_field[left][up] + initial_field[right][up] +
-        initial_field[left][down] + initial_field[right][down];
+    else{
+        (right = j + 1);
+    }
+    return num = initial_field[up][j] + initial_field[down][j] + initial_field[i][left] + 
+           initial_field[i][right] + initial_field[up][left] + initial_field[up][right] + 
+           initial_field[down][left] + initial_field[down][right];
 }
 
 
-void next_generation(int **initial_field, int **modified_field, int width,
-                     int height)
+void next_generation(int **initial_field, int **modified_field, int height,int width)
 {
     int i, j, num;
-    for (i = 0; i < width; i++) {
-        for (j = 0; j < height; j++) {
-            num = num_of_neighbors(initial_field, width, height, i, j);
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++) {
+            num = num_of_neighbors(initial_field, height, width, i, j);
             if ((num == 3) || (initial_field[i][j] && num == 2)) {
                 modified_field[i][j] = 1;
             } else
@@ -85,31 +85,31 @@ void next_generation(int **initial_field, int **modified_field, int width,
     }
 }
 
-void cpy_modif_field_in_init_field(int **inital_field, int **modified_field, int width, int heigth)
+void cpy_modif_field_in_init_field(int **inital_field, int **modified_field, int height, int width)
 {
     int i, j;
-    for (i = 0; i < width; i++) {
-        for (j = 0; j < heigth; j++) {
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++) {
             inital_field[i][j] = modified_field[i][j];
         }
     }
 }
 
-void fOutputField(FILE * out_field, int **field, int width, int height)
+void fOutputField(FILE *out_file, int **field, int height, int width)
 {
     int i, j;
-    for (i = 0; i < width; i++) {
-        for (j = 0; j < height; j++) {
-            fprintf(out_field, "%d", field[i][j]);
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++) {
+            fprintf(out_file, "%d", field[i][j]);
         }
-        fprintf(out_field, "\n");
+        fprintf(out_file, "\n");
     }
 }
 
-void freeField(int **field, int width)
+void freeField(int **field, int height)
 {
     int i;
-    for (i = 0; i < width; i++) {
+    for (i = 0; i < height; i++) {
         free(field[i]);
     }
     free(field);
@@ -118,41 +118,38 @@ void freeField(int **field, int width)
 int main()
 {
     int i;
-    FILE *in_field, *out_field;
-    if (!(in_field = fopen("life.in", "r"))) {
+    FILE *in_file, *out_file;
+    if (!(in_file = fopen("life.in", "r"))) {
         puts("ERROR unable to open file");
         return 0;
     }
-    if (!(out_field = fopen("life.out", "w"))) {
+    if (!(out_file = fopen("life.out", "w"))) {
         puts("ERROR unable to open file");
         return 0;
     }
-    int width, height, num_of_generation;
+    int  height, width, num_of_generation;
     int **initial_field, **modified_field;
-    width = input_data(in_field);
-    height = input_data(in_field);
-    num_of_generation = input_data(in_field);
-    initial_field = (int **) calloc(width, sizeof(int *));
-    for (i = 0; i < width; i++) {
-        initial_field[i] = (int *) calloc(height, sizeof(int));
+    height = input_data(in_file);
+    width = input_data(in_file);
+    num_of_generation = input_data(in_file);
+    initial_field = (int **) calloc(height, sizeof(int *));
+    for (i = 0; i < height; i++) {
+        initial_field[i] = (int *) calloc(width, sizeof(int));
     }
-    input_field(in_field, initial_field, width, height);
-    output_field(initial_field, width, height);
-    modified_field = (int **) calloc(width, sizeof(int *));
-    for (i = 0; i < width; i++) {
-        modified_field[i] = (int *) calloc(height, sizeof(int));
+    input_field(in_file, initial_field, height, width);
+    modified_field = (int **) calloc(height, sizeof(int *));
+    for (i = 0; i < height; i++) {
+        modified_field[i] = (int *) calloc(width, sizeof(int));
     }
     for (i = 0; i < num_of_generation; i++) {
-        next_generation(initial_field, modified_field, width, height);
-        output_field(modified_field, width, height);
-        cpy_modif_field_in_init_field(initial_field, modified_field, width,
-                                      height);
-        system("clear");
+        next_generation(initial_field, modified_field, height,width);
+        output_field(modified_field, height, width);
+        cpy_modif_field_in_init_field(initial_field, modified_field, height, width);
     }
-    fOutputField(out_field, modified_field, width, height);
-    fclose(in_field);
-    fclose(out_field);
-    freeField(initial_field, width);
-    freeField(modified_field, width);
+    fOutputField(out_file, modified_field,height, width);
+    fclose(in_file);
+    fclose(out_file);
+    freeField(initial_field, height);
+    freeField(modified_field, height);
     return 0;
 }
