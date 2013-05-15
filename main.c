@@ -122,7 +122,7 @@ int main()
 {
     int i;
     FILE *in_file, *out_file;
-    if (!(in_file = fopen("life.ins", "r"))) {
+    if (!(in_file = fopen("life.in", "r"))) {
         puts("ERROR unable to open file");
         return 0;
     }
