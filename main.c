@@ -148,7 +148,6 @@ int main()
     for (i = 0; i < num_of_generation; i++) {
         next_generation(initial_field, modified_field, height, width);
         output_field(modified_field, height, width);
-
         cpy_modif_field_in_init_field(initial_field, modified_field,
                                       height, width);
     }
