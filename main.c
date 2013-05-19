@@ -3,7 +3,7 @@
 
 #define string_size 256
 
-int input_data(FILE * in_file)
+int InputData(FILE * in_file)
 {
     int number;
     char input_buffer[string_size];
@@ -12,11 +12,10 @@ int input_data(FILE * in_file)
     return number;
 }
 
-void input_field(FILE * in_file, int **initial_field, int height,
+void InputField(FILE * in_file, int **initial_field, int height,
                  int width)
 {
     int i, j;
-
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
             initial_field[i][j] = getc(in_file) - '0';
@@ -25,7 +24,7 @@ void input_field(FILE * in_file, int **initial_field, int height,
     }
 }
 
-void output_field(int **initial_field, int height, int width)
+void OutputField(int **initial_field, int height, int width)
 {
     int i, j;
     for (i = 0; i < height; i++) {
@@ -39,8 +38,7 @@ void output_field(int **initial_field, int height, int width)
     }
 }
 
-int num_of_neighbors(int **initial_field, int height, int width, int i,
-                     int j)
+int NumNeighbors(int **initial_field, int height, int width, int i,int j)
 {
     int up, down, right, left, num;
     if (i == 0) {
@@ -70,14 +68,12 @@ int num_of_neighbors(int **initial_field, int height, int width, int i,
         initial_field[down][left] + initial_field[down][right];
 }
 
-
-void next_generation(int **initial_field, int **modified_field, int height,
-                     int width)
+void NextGeneration(int **initial_field, int **modified_field, int height,int width)
 {
     int i, j, num;
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            num = num_of_neighbors(initial_field, height, width, i, j);
+            num = NumNeighbors(initial_field, height, width, i, j);
             if ((num == 3) || (initial_field[i][j] && num == 2)) {
                 modified_field[i][j] = 1;
             } else
@@ -86,9 +82,7 @@ void next_generation(int **initial_field, int **modified_field, int height,
     }
 }
 
-void cpy_modif_field_in_init_field(int **inital_field,
-                                   int **modified_field, int height,
-                                   int width)
+void CpyModifFieldInInitField(int **inital_field,int **modified_field, int height,int width)
 {
     int i, j;
     for (i = 0; i < height; i++) {
@@ -98,7 +92,7 @@ void cpy_modif_field_in_init_field(int **inital_field,
     }
 }
 
-void fOutputField(FILE * out_file, int **field, int height, int width)
+void FOutputField(FILE * out_file, int **field, int height, int width)
 {
     int i, j;
     for (i = 0; i < height; i++) {
@@ -109,7 +103,7 @@ void fOutputField(FILE * out_file, int **field, int height, int width)
     }
 }
 
-void freeField(int **field, int height)
+void FreeField(int **field, int height)
 {
     int i;
     for (i = 0; i < height; i++) {
@@ -132,29 +126,27 @@ int main()
     }
     int height, width, num_of_generation;
     int **initial_field, **modified_field;
-    height = input_data(in_file);
-    width = input_data(in_file);
-    num_of_generation = input_data(in_file);
+    height = InputData(in_file);
+    width = InputData(in_file);
+    num_of_generation = InputData(in_file);
     initial_field = (int **) calloc(height, sizeof(int *));
     for (i = 0; i < height; i++) {
         initial_field[i] = (int *) calloc(width, sizeof(int));
     }
-    printf("%d%d", height, width);
-    input_field(in_file, initial_field, height, width);
+    InputField(in_file, initial_field, height, width);
     modified_field = (int **) calloc(height, sizeof(int *));
     for (i = 0; i < height; i++) {
         modified_field[i] = (int *) calloc(width, sizeof(int));
     }
     for (i = 0; i < num_of_generation; i++) {
-        next_generation(initial_field, modified_field, height, width);
-        output_field(modified_field, height, width);
-        cpy_modif_field_in_init_field(initial_field, modified_field,
-                                      height, width);
+        NextGeneration(initial_field, modified_field, height, width);
+        OutputField(modified_field, height, width);
+        CpyModifFieldInInitField(initial_field, modified_field,height, width);
     }
-    fOutputField(out_file, modified_field, height, width);
+    FOutputField(out_file, modified_field, height, width);
     fclose(in_file);
     fclose(out_file);
-    freeField(initial_field, height);
-    freeField(modified_field, height);
+    FreeField(initial_field, height);
+    FreeField(modified_field, height);
     return 0;
 }

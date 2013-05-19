@@ -1,4 +1,4 @@
-OBJ = main.c
+OBJ = main.o
 CFLAGS = -Wall -std=c99
 
 all: bin
